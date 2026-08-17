@@ -8,6 +8,9 @@
     "location": {
       "value": "${AZURE_LOCATION}"
     },
+    "appServiceLocation": {
+      "value": "${AZURE_APP_SERVICE_LOCATION=}"
+    },
     "enableTelemetry": {
       "value": "${ENABLE_TELEMETRY=true}"
     },

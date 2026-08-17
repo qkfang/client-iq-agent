@@ -170,9 +170,19 @@ resource webApp 'Microsoft.Web/sites@2023-12-01' = {
 
 // ========== Role Assignments ========== //
 
-resource storageBlobDataContributor 'Microsoft.Authorization/roleDefinitions@2022-04-01' existing = {
+resource storageBlobDataOwner 'Microsoft.Authorization/roleDefinitions@2022-04-01' existing = {
   scope: subscription()
-  name: 'ba92f5b4-2d11-453d-a403-e96b0029c9fe' // Storage Blob Data Contributor
+  name: 'b7e6dc6d-f1e8-4753-8033-0f276bb0955b' // Storage Blob Data Owner
+}
+
+resource storageQueueDataContributor 'Microsoft.Authorization/roleDefinitions@2022-04-01' existing = {
+  scope: subscription()
+  name: '974c5e8b-45b9-4653-ba55-5f855dd0fb88' // Storage Queue Data Contributor
+}
+
+resource storageAccountContributor 'Microsoft.Authorization/roleDefinitions@2022-04-01' existing = {
+  scope: subscription()
+  name: '17d1049b-9a84-46fb-8f53-869881c3d3ab' // Storage Account Contributor
 }
 
 resource azureServiceBusDataOwner 'Microsoft.Authorization/roleDefinitions@2022-04-01' existing = {
@@ -185,12 +195,32 @@ resource azureAIUser 'Microsoft.Authorization/roleDefinitions@2022-04-01' existi
   name: '53ca6127-db72-4b80-b1b0-d745d6d5456d' // Azure AI User
 }
 
-resource functionAppStorageBlobDataContributor 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+resource functionAppStorageBlobDataOwner 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
   scope: storageAccount
-  name: guid(storageAccount.id, functionApp.id, storageBlobDataContributor.id)
+  name: guid(storageAccount.id, functionApp.id, storageBlobDataOwner.id)
   properties: {
     principalId: functionApp.identity.principalId
-    roleDefinitionId: storageBlobDataContributor.id
+    roleDefinitionId: storageBlobDataOwner.id
+    principalType: 'ServicePrincipal'
+  }
+}
+
+resource functionAppStorageQueueDataContributor 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+  scope: storageAccount
+  name: guid(storageAccount.id, functionApp.id, storageQueueDataContributor.id)
+  properties: {
+    principalId: functionApp.identity.principalId
+    roleDefinitionId: storageQueueDataContributor.id
+    principalType: 'ServicePrincipal'
+  }
+}
+
+resource functionAppStorageAccountContributor 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+  scope: storageAccount
+  name: guid(storageAccount.id, functionApp.id, storageAccountContributor.id)
+  properties: {
+    principalId: functionApp.identity.principalId
+    roleDefinitionId: storageAccountContributor.id
     principalType: 'ServicePrincipal'
   }
 }

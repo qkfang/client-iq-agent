@@ -89,6 +89,9 @@ param useCase string = 'Retail-sales-analysis'
 @description('Location for AI services deployment. This is the location where the Search service resource will be deployed.')
 param searchServiceLocation string = resourceGroup().location
 
+@description('Location for the App Service plan, Web App, and Function App.')
+param appServiceLocation string = ''
+
 @allowed([
   'australiaeast'
   'eastus'
@@ -159,6 +162,7 @@ var solutionSuffix = toLower(trim(replace(
 '*', '')))
 
 var useExistingFabricCapacity = !empty(existingFabricCapacityName)
+var resolvedAppServiceLocation = empty(appServiceLocation) ? location : appServiceLocation
 var deployerInfo = deployer()
 var deployingUserPrincipalId = deployerInfo.objectId
 
@@ -275,7 +279,7 @@ module appServices 'deploy_app_service.bicep' = {
     appServicePlanName: '${abbrs.compute.appServicePlan}${solutionSuffix}'
     functionAppName: '${abbrs.compute.functionApp}${solutionSuffix}'
     webAppName: '${abbrs.compute.webApp}${solutionSuffix}'
-    location: location
+    location: resolvedAppServiceLocation
     storageAccountName: aifoundry.outputs.storageAccountName
     serviceBusNamespaceName: serviceBus.outputs.serviceBusNamespaceName
     serviceBusFullyQualifiedNamespace: serviceBus.outputs.serviceBusFullyQualifiedNamespace
@@ -299,6 +303,9 @@ module appServices 'deploy_app_service.bicep' = {
 // Common Outputs
 @description('The location the resources were deployed to')
 output AZURE_LOCATION string = location
+
+@description('The location where the App Service plan, Web App, and Function App were deployed')
+output AZURE_APP_SERVICE_LOCATION string = resolvedAppServiceLocation
 
 @description('The name of the resource group')
 output AZURE_RESOURCE_GROUP string = resourceGroup().name
