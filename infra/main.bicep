@@ -26,7 +26,9 @@ param location string = resourceGroup().location
 param enableTelemetry bool = true
 
 @description('Optional. Created by user name.')
-param createdBy string = contains(deployer(), 'userPrincipalName') ? split(deployer().userPrincipalName, '@')[0] : deployer().objectId
+param createdBy string = contains(deployer(), 'userPrincipalName')
+  ? split(deployer().userPrincipalName, '@')[0]
+  : deployer().objectId
 
 // ========== Fabric Parameters ========== //
 
@@ -154,15 +156,13 @@ param deployingUserPrincipalType string = 'User'
 // ========== Variables ========== //
 var solutionSuffix = toLower(trim(replace(
   replace(
-    replace(
-      replace(
-        replace(
-          replace('${solutionName}${solutionUniqueText}', '-', ''),
-        '_', ''),
-      '.', ''),
-    '/', ''),
-  ' ', ''),
-'*', '')))
+    replace(replace(replace(replace('${solutionName}${solutionUniqueText}', '-', ''), '_', ''), '.', ''), '/', ''),
+    ' ',
+    ''
+  ),
+  '*',
+  ''
+)))
 
 var useExistingFabricCapacity = !empty(existingFabricCapacityName)
 var resolvedAppServiceLocation = empty(appServiceLocation) ? location : appServiceLocation
@@ -173,15 +173,12 @@ var deployingUserPrincipalId = deployerInfo.objectId
 resource resourceGroupTags 'Microsoft.Resources/tags@2021-04-01' = {
   name: 'default'
   properties: {
-    tags: union(
-      resourceGroup().tags,
-      {
-        TemplateName: 'Microsoft IQ Solution Accelerator'
-        CreatedBy: createdBy
-        DeploymentName: deployment().name
-        Type: 'Non-WAF'
-      }
-    )
+    tags: union(resourceGroup().tags, {
+      TemplateName: 'Microsoft IQ Solution Accelerator'
+      CreatedBy: createdBy
+      DeploymentName: deployment().name
+      Type: 'Non-WAF'
+    })
   }
 }
 
@@ -292,7 +289,9 @@ module appServices 'deploy_app_service.bicep' = {
     foundryModelDeploymentName: gptModelName
     foundryKnowledgeBaseMcpEndpoint: '${aifoundry.outputs.aiSearchTarget}/knowledgebases/${solutionSuffix}-onboarding-kb/mcp?api-version=2025-11-01-preview'
     foundryKnowledgeBaseConnectionName: '${solutionSuffix}-onboarding-kb-mcp-connection'
-    foundryWorkIqConnectionId: empty(workIqConnectionName) ? '' : '${aifoundry.outputs.aiFoundryResourceId}/projects/${aifoundry.outputs.aiProjectName}/connections/${workIqConnectionName}'
+    foundryWorkIqConnectionId: empty(workIqConnectionName)
+      ? ''
+      : '${aifoundry.outputs.aiFoundryResourceId}/projects/${aifoundry.outputs.aiProjectName}/connections/${workIqConnectionName}'
     azureAdInstance: azureAdInstance
     azureAdTenantId: azureAdTenantId
     azureAdClientId: azureAdClientId
