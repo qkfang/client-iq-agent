@@ -82,28 +82,32 @@ def _get_current_git_branch() -> str | None:
 
 
 def _get_current_git_remote() -> tuple[str, str] | None:
-    """Get the ``owner`` and ``repo`` of the ``origin`` git remote.
+    """Get the ``owner`` and ``repo`` for the installer source repository.
 
-    Supports both HTTPS (``https://github.com/owner/repo.git``) and SSH
-    (``git@github.com:owner/repo.git``) remote URL forms.
+    ``GITHUB_REPOSITORY`` can explicitly select an ``owner/repo``. Otherwise,
+    the function supports both HTTPS and SSH URLs from the ``origin`` remote.
 
     Returns:
         tuple[str, str]: ``(owner, repo)``, or ``None`` if not in a git
         repository, the ``origin`` remote is missing, or detection fails.
     """
-    try:
-        result = subprocess.run(
-            ["git", "remote", "get-url", "origin"],
-            cwd=REPO_ROOT,
-            capture_output=True,
-            text=True,
-            check=True,
-        )
-    except (subprocess.CalledProcessError, FileNotFoundError) as exc:
-        logger.debug(f"Could not detect git remote: {exc}")
-        return None
+    repository_override = os.getenv("GITHUB_REPOSITORY", "").strip()
+    if repository_override:
+        url = repository_override
+    else:
+        try:
+            result = subprocess.run(
+                ["git", "remote", "get-url", "origin"],
+                cwd=REPO_ROOT,
+                capture_output=True,
+                text=True,
+                check=True,
+            )
+        except (subprocess.CalledProcessError, FileNotFoundError) as exc:
+            logger.debug(f"Could not detect git remote: {exc}")
+            return None
+        url = result.stdout.strip()
 
-    url = result.stdout.strip()
     if not url:
         return None
 

@@ -121,7 +121,7 @@ setup_logging()
 logger = logging.getLogger(__name__)
 
 from common.config import REPO_ROOT, SOLUTION_NAME, default_workspace_name
-from common.env import load_infra_env
+from common.env import load_all_env
 from common.env_utils import (
     get_required_env_var,
     parse_workspace_administrators,
@@ -181,7 +181,7 @@ def main() -> None:
     # ------------------------------------------------------------------
     # Configuration from environment variables
     # ------------------------------------------------------------------
-    load_infra_env()
+    load_all_env()
     capacity_name = get_required_env_var("AZURE_FABRIC_CAPACITY_NAME")
     subscription_id = get_required_env_var("AZURE_SUBSCRIPTION_ID")
     resource_group = get_required_env_var("AZURE_RESOURCE_GROUP")
@@ -537,29 +537,29 @@ def main() -> None:
     except Exception as exc:
         _abort("setup_administrators", exc)
 
-    # # ------------------------------------------------------------------
-    # # Step 6 - Upload installer notebook
-    # # ------------------------------------------------------------------
-    # print_step(7, 9, "Uploading installer notebook",
-    #            notebook=INSTALLER_NOTEBOOK_NAME)
-    # try:
-    #     notebook_id = upload_installer_notebook(workspace_client, notebook_path, github_token=github_token)
-    #     logger.info("Successfully completed: upload_installer")
-    #     executed_steps.append("upload_installer")
-    # except Exception as exc:
-    #     _abort("upload_installer", exc)
+    # ------------------------------------------------------------------
+    # Step 6 - Upload installer notebook
+    # ------------------------------------------------------------------
+    print_step(7, 9, "Uploading installer notebook",
+               notebook=INSTALLER_NOTEBOOK_NAME)
+    try:
+        notebook_id = upload_installer_notebook(workspace_client, notebook_path, github_token=github_token)
+        logger.info("Successfully completed: upload_installer")
+        executed_steps.append("upload_installer")
+    except Exception as exc:
+        _abort("upload_installer", exc)
 
-    # # ------------------------------------------------------------------
-    # # Step 7 - Run installer notebook
-    # # ------------------------------------------------------------------
-    # print_step(8, 9, "Running installer notebook",
-    #            notebook_id=notebook_id)
-    # try:
-    #     run_installer_notebook(workspace_client, notebook_id)
-    #     logger.info("Successfully completed: run_installer")
-    #     executed_steps.append("run_installer")
-    # except Exception as exc:
-    #     _abort("run_installer", exc)
+    # ------------------------------------------------------------------
+    # Step 7 - Run installer notebook
+    # ------------------------------------------------------------------
+    print_step(8, 9, "Running installer notebook",
+               notebook_id=notebook_id)
+    try:
+        run_installer_notebook(workspace_client, notebook_id)
+        logger.info("Successfully completed: run_installer")
+        executed_steps.append("run_installer")
+    except Exception as exc:
+        _abort("run_installer", exc)
 
     # # ------------------------------------------------------------------
     # # Step 8 - Deploy hosted Foundry agent (optional)
