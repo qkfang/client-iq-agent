@@ -43,6 +43,12 @@ public class FoundryOptions
     public List<McpConnectedTool> ConnectedTools { get; set; } = new();
 
     /// <summary>
+    /// Full resource ID of the OAuth2 Work IQ project connection. When set,
+    /// the native Work IQ tool runs in the signed-in user's context.
+    /// </summary>
+    public string WorkIqConnectionId { get; set; } = string.Empty;
+
+    /// <summary>
     /// When true, the built-in web search tool is attached to the agent.
     /// </summary>
     public bool EnableWebSearch { get; set; }

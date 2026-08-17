@@ -44,11 +44,6 @@ FABRIC_IQ_SERVER_URL = (
     "https://api.fabric.microsoft.com/v1/mcp/fabricaihub/integrations/m365"
 )
 
-# Work IQ MCP tool — hosted Microsoft service exposing workplace knowledge.
-WORKIQ_SERVER_LABEL = "WorkIQMCP"
-WORKIQ_SERVER_URL = "https://workiq.svc.cloud.microsoft/mcp"
-WORKIQ_CONNECTION_NAME = "WorkIQMCP"
-
 # Work IQ Agent 365 MCP servers. The project connection name matches the label.
 WORKIQ_MAIL_SERVER_LABEL = "WorkIQMail"
 WORKIQ_MAIL_SERVER_URL = (
@@ -467,19 +462,18 @@ def build_kb_mcp_tool(mcp_endpoint: str, connection_name: str):
     )
 
 
-def build_workiq_mcp_tool():
-    """Build the MCP tool definition for the hosted Work IQ service.
+def build_workiq_tool(project_connection_id: str):
+    """Build the native Work IQ tool definition.
+
+    Args:
+        project_connection_id: Full ARM resource ID of the Work IQ project connection.
 
     Returns:
-        An ``MCPTool`` bound to the Work IQ MCP endpoint.
+        A ``WorkIQPreviewTool`` bound to the configured OAuth2 connection.
     """
-    from azure.ai.projects.models import MCPTool
+    from azure.ai.projects.models import WorkIQPreviewTool
 
-    return MCPTool(
-        server_label=WORKIQ_SERVER_LABEL,
-        server_url=WORKIQ_SERVER_URL,
-        project_connection_id=WORKIQ_CONNECTION_NAME,
-    )
+    return WorkIQPreviewTool(project_connection_id=project_connection_id)
 
 
 def build_fabric_iq_tool(project_connection_id: str, server_url: str | None = None):

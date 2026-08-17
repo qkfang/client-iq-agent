@@ -12,7 +12,7 @@ from foundry.agent_api import (
     CHAT_AGENT_NAME,
     build_agent_instructions,
     build_kb_mcp_tool,
-    build_workiq_mcp_tool,
+    build_workiq_tool,
     create_agent_client,
     create_kb_mcp_connection,
     create_or_update_agent,
@@ -36,6 +36,7 @@ def setup_agent(
     resource_group: str,
     ai_service_name: str | None,
     ai_project_name: str | None,
+    work_iq_project_connection_id: str | None = None,
     agent_name: str = CHAT_AGENT_NAME,
     scenario_desc: str = "Managing delivery operations, inventory logistics, and supplier relationships.",
 ) -> None:
@@ -53,6 +54,7 @@ def setup_agent(
         resource_group: Azure resource group name.
         ai_service_name: Azure AI Services account name (required for MCP connection).
         ai_project_name: Azure AI Project name (required for MCP connection).
+        work_iq_project_connection_id: Full Work IQ project connection resource ID.
         agent_name: Name for the agent resource. Defaults to ``CHAT_AGENT_NAME``.
         scenario_desc: Persona description injected into the agent instructions.
     """
@@ -93,12 +95,15 @@ def setup_agent(
     # Create / replace agent
     logger.info(f"   Creating agent '{agent_name}'…")
     _kb_tool = build_kb_mcp_tool(_mcp_ep, kb_mcp_connection_name)
+    _tools = [_kb_tool]
+    if work_iq_project_connection_id:
+        _tools.append(build_workiq_tool(work_iq_project_connection_id))
     with _agent_client:
         _agent = create_or_update_agent(
             project_client=_agent_client,
             agent_name=agent_name,
             model=agent_model,
             instructions=_instructions,
-            tools=[_kb_tool, build_workiq_mcp_tool()],
+            tools=_tools,
         )
     logger.info(f"   Agent '{_agent.name}' ready (id: {_agent.id})")

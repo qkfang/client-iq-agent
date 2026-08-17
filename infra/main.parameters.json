@@ -32,6 +32,9 @@
     "onboardingAgentId": {
       "value": "${SALES_CRM_ONBOARDING_AGENT_ID=}"
     },
+    "workIqConnectionName": {
+      "value": "${WORK_IQ_CONNECTION_NAME=}"
+    },
     "azureAdInstance": {
       "value": "${AZURE_AD_INSTANCE=https://login.microsoftonline.com/}"
     },

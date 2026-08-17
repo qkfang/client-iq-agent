@@ -62,6 +62,9 @@ param azureExistingAIProjectResourceId string = ''
 @description('Optional. The Azure AI Foundry agent id for the SalesCRMOnboarding agent used by the CRM Web App. When empty, the Web App onboards candidates locally.')
 param onboardingAgentId string = ''
 
+@description('Optional. Name of the OAuth2 Work IQ connection in the Foundry project.')
+param workIqConnectionName string = ''
+
 @description('Optional. The Microsoft Entra authority instance used by the CRM Web App sign-in.')
 param azureAdInstance string = environment().authentication.loginEndpoint
 
@@ -287,6 +290,9 @@ module appServices 'deploy_app_service.bicep' = {
     foundryProjectEndpoint: aifoundry.outputs.projectEndpoint
     foundryOnboardingAgentId: onboardingAgentId
     foundryModelDeploymentName: gptModelName
+    foundryKnowledgeBaseMcpEndpoint: '${aifoundry.outputs.aiSearchTarget}/knowledgebases/${solutionSuffix}-onboarding-kb/mcp?api-version=2025-11-01-preview'
+    foundryKnowledgeBaseConnectionName: '${solutionSuffix}-onboarding-kb-mcp-connection'
+    foundryWorkIqConnectionId: empty(workIqConnectionName) ? '' : '${aifoundry.outputs.aiFoundryResourceId}/projects/${aifoundry.outputs.aiProjectName}/connections/${workIqConnectionName}'
     azureAdInstance: azureAdInstance
     azureAdTenantId: azureAdTenantId
     azureAdClientId: azureAdClientId
@@ -400,6 +406,9 @@ output AZURE_SERVICE_BUS_QUEUE_NAME string = serviceBus.outputs.serviceBusQueueN
 
 @description('Name of the onboarding Function App')
 output AZURE_FUNCTION_APP_NAME string = appServices.outputs.functionAppName
+
+@description('Foundry onboarding agent used by the Web App and Function App')
+output SALES_CRM_ONBOARDING_AGENT_ID string = onboardingAgentId
 
 @description('Blob container watched by the Function App for incoming onboarding forms')
 output AZURE_ONBOARDING_CONTAINER_NAME string = appServices.outputs.onboardingContainerName

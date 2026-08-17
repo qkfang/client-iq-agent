@@ -89,6 +89,22 @@ if (!string.IsNullOrWhiteSpace(foundry.ProjectEndpoint) &&
             tools.Add(mcpTool);
         }
 
+        if (!string.IsNullOrWhiteSpace(foundry.WorkIqConnectionId))
+        {
+            var workIqTool = ResponseTool.CreateMcpTool(
+                serverLabel: "work-iq",
+                serverUri: new Uri("https://workiq.svc.cloud.microsoft/mcp"),
+                toolCallApprovalPolicy: neverApprove);
+            workIqTool.Patch.Set(
+                "$"u8,
+                BinaryData.FromObjectAsJson(new
+                {
+                    type = "work_iq_preview",
+                    project_connection_id = foundry.WorkIqConnectionId,
+                }));
+            tools.Add(workIqTool);
+        }
+
         // Bing web search used to research the customer.
         if (foundry.EnableWebSearch)
         {

@@ -18,8 +18,8 @@ azure-storage-blob==12.28.0
 # Azure OpenAI — client factory (openai_api.py)
 openai==2.8.1
 
-# Azure AI Projects — agent creation (02_create_agent_no_sql.py)
-azure-ai-projects==2.1.0
+# Azure AI Projects — agent creation and native Work IQ tool support
+azure-ai-projects==2.4.0
 
 # PDF processing — document extraction and chunking
 pypdf==6.10.2

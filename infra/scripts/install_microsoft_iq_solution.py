@@ -242,6 +242,14 @@ def main() -> None:
     onboarding_kb_mcp_connection_name = os.getenv(
         "KB_ONBOARDING_MCP_CONNECTION_NAME", f"{solution_suffix}-onboarding-kb-mcp-connection"
     )
+    work_iq_connection_name = os.getenv("WORK_IQ_CONNECTION_NAME")
+    work_iq_project_connection_id = None
+    if work_iq_connection_name:
+        work_iq_project_connection_id = (
+            f"/subscriptions/{subscription_id}/resourceGroups/{resource_group}"
+            f"/providers/Microsoft.CognitiveServices/accounts/{ai_service_name}"
+            f"/projects/{ai_project_name}/connections/{work_iq_connection_name}"
+        )
 
     # ------------------------------------------------------------------
     # Startup banner
@@ -394,6 +402,7 @@ def main() -> None:
             resource_group=resource_group,
             ai_service_name=ai_service_name,
             ai_project_name=ai_project_name,
+            work_iq_project_connection_id=work_iq_project_connection_id,
         )
         logger.info("   Creating onboarding agent with Knowledge Base MCP tool…")
         setup_agent(
@@ -408,6 +417,7 @@ def main() -> None:
             resource_group=resource_group,
             ai_service_name=ai_service_name,
             ai_project_name=ai_project_name,
+            work_iq_project_connection_id=work_iq_project_connection_id,
             agent_name=ONBOARDING_AGENT_NAME,
             scenario_desc="Guiding new-client onboarding: entity resolution, KYC/AML screening, document validation and account setup.",
         )

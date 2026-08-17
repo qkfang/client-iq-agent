@@ -205,6 +205,7 @@ def deploy_onboarding_hosted_agent(
     cpu: str,
     memory: str,
     webapp_mcp_url: str | None = None,
+    work_iq_project_connection_id: str | None = None,
 ) -> None:
     """Build, push, and deploy the onboarding Foundry agent from ``src/hosted-agent-onboarding``.
 
@@ -233,10 +234,11 @@ def deploy_onboarding_hosted_agent(
         memory: Memory allocation for the hosted agent.
         webapp_mcp_url: Web app MCP endpoint hosting finalize_customer_onboarding.
             Omit to deploy without the finalize tool.
+        work_iq_project_connection_id: Full Work IQ project connection resource ID.
     """
     from azure.ai.projects.models import MCPTool, WebSearchTool
 
-    from foundry.agent_api import build_workiq_mcp_tool
+    from foundry.agent_api import build_workiq_tool
 
     # One Knowledge Base MCP tool per IQ knowledge base, each with its own
     # project connection and a distinct server label (matches the .NET config).
@@ -276,7 +278,9 @@ def deploy_onboarding_hosted_agent(
 
     # Match the .NET OnboardingAgent tool set: the IQ knowledge bases, Work IQ,
     # web (Bing) search and — when the web app is deployed — the finalize tool.
-    _tools = [*_kb_tools, build_workiq_mcp_tool(), WebSearchTool()]
+    _tools = [*_kb_tools, WebSearchTool()]
+    if work_iq_project_connection_id:
+        _tools.append(build_workiq_tool(work_iq_project_connection_id))
     if webapp_mcp_url:
         _tools.append(
             MCPTool(

@@ -5,8 +5,8 @@ OnboardingAgent setup step for the Microsoft IQ deployment.
 Creates an AI Foundry agent focused on helping new users find onboarding
 and reference documentation. It follows the same pattern as
 ``step_agent_setup.py`` (ChatAgent) and wires up the Foundry IQ Knowledge
-Base MCP tool plus the hosted Work IQ MCP tool — Fabric IQ and Web IQ do
-not yet expose a Python/MCP integration surface in this repository. Once
+Base MCP tool plus the native Work IQ tool when configured — Fabric IQ and
+Web IQ do not yet expose a Python/MCP integration surface in this repository. Once
 their MCP endpoints are confirmed, add the corresponding tool(s) to the
 ``tools`` list built in ``setup_onboarding_agent()`` below.
 """
@@ -17,7 +17,7 @@ from foundry.agent_api import (
     ONBOARDING_AGENT_NAME,
     build_kb_mcp_tool,
     build_onboarding_agent_instructions,
-    build_workiq_mcp_tool,
+    build_workiq_tool,
     create_agent_client,
     create_kb_mcp_connection,
     create_or_update_agent,
@@ -40,6 +40,7 @@ def setup_onboarding_agent(
     resource_group: str,
     ai_service_name: str | None,
     ai_project_name: str | None,
+    work_iq_project_connection_id: str | None = None,
 ) -> None:
     """Create or update an AI Foundry OnboardingAgent wired up to the Knowledge Base MCP tool.
 
@@ -54,6 +55,7 @@ def setup_onboarding_agent(
         resource_group: Azure resource group name.
         ai_service_name: Azure AI Services account name (required for MCP connection).
         ai_project_name: Azure AI Project name (required for MCP connection).
+        work_iq_project_connection_id: Full Work IQ project connection resource ID.
     """
     _instructions = build_onboarding_agent_instructions(solution_name)
     logger.debug(f"      Built instructions ({len(_instructions)} chars)")
@@ -89,7 +91,9 @@ def setup_onboarding_agent(
 
     # Tools attached to the agent. Fabric IQ / Web IQ tools should be
     # appended here once their MCP endpoints are confirmed.
-    _tools = [build_kb_mcp_tool(_mcp_ep, kb_mcp_connection_name), build_workiq_mcp_tool()]
+    _tools = [build_kb_mcp_tool(_mcp_ep, kb_mcp_connection_name)]
+    if work_iq_project_connection_id:
+        _tools.append(build_workiq_tool(work_iq_project_connection_id))
 
     logger.info(f"   Creating agent '{ONBOARDING_AGENT_NAME}'…")
     with _agent_client:

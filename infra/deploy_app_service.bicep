@@ -56,6 +56,15 @@ param foundryLegoAgentId string = ''
 @description('The chat model deployment name used by the CRM Web App onboarding agent.')
 param foundryModelDeploymentName string = ''
 
+@description('The Azure AI Search knowledge base MCP endpoint used by the CRM Web App onboarding agent.')
+param foundryKnowledgeBaseMcpEndpoint string = ''
+
+@description('The Foundry project connection name for the knowledge base MCP endpoint.')
+param foundryKnowledgeBaseConnectionName string = ''
+
+@description('The full resource ID of the OAuth2 Work IQ project connection.')
+param foundryWorkIqConnectionId string = ''
+
 @description('The Microsoft Entra authority instance used by the CRM Web App sign-in.')
 param azureAdInstance string = environment().authentication.loginEndpoint
 
@@ -157,6 +166,11 @@ resource webApp 'Microsoft.Web/sites@2023-12-01' = {
         { name: 'Foundry__SalesCrmOnboardingAgentId', value: foundryOnboardingAgentId }
         { name: 'Foundry__ModelDeploymentName', value: foundryModelDeploymentName }
         { name: 'Foundry__WebAppMcpUrl', value: 'https://${webAppName}.azurewebsites.net/mcp' }
+        { name: 'Foundry__TenantId', value: azureAdTenantId }
+        { name: 'Foundry__ConnectedTools__0__ServerLabel', value: 'knowledge-base' }
+        { name: 'Foundry__ConnectedTools__0__ServerUrl', value: foundryKnowledgeBaseMcpEndpoint }
+        { name: 'Foundry__ConnectedTools__0__ProjectConnectionId', value: foundryKnowledgeBaseConnectionName }
+        { name: 'Foundry__WorkIqConnectionId', value: foundryWorkIqConnectionId }
         { name: 'AzureAd__Instance', value: azureAdInstance }
         { name: 'AzureAd__TenantId', value: azureAdTenantId }
         { name: 'AzureAd__ClientId', value: azureAdClientId }
