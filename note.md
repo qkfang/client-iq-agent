@@ -39,17 +39,30 @@ please onboard: "Contoso Solutions" as as Private Company
 
   
 
-work iq:
+## Work IQ and Microsoft 365 setup status
 
-az ad sp create --id fdcc1f02-fc51-4226-8753-f668596af7f7
+Required:
 
+- Temporarily activate Global Administrator for the one-time tenant setup.
+- Provision the Work IQ enterprise application.
+- Add delegated `WorkIQAgent.Ask` to the existing confidential web app and grant tenant-wide admin consent.
+- Assign Teams Enterprise and Microsoft 365 E5 without Teams to each test user so Teams and Exchange/Outlook data are available.
+- Ensure each user has Power BI/Fabric entitlement and workspace access.
+- Use the native `work_iq_preview` Foundry tool with the existing project connection. Work IQ is delegated/OBO, not generic MCP or app-only authentication.
 
+Completed and verified on 2026-08-18:
 
-Granting admin consent...
-Updating appsettings.json...
-Storing client secret in dotnet user-secrets...
+- Work IQ enterprise application provisioned.
+- Existing web app has tenant-wide `WorkIQAgent.Ask` consent (`AllPrincipals`).
+- Both test users have successful Teams, Exchange/Outlook, and Power BI/Fabric service plans.
+- Both test users are Admins of the existing Fabric workspace.
+- Existing Fabric F2 capacity resumed and verified active.
+- No duplicate app registration, Foundry connection, workspace, or capacity was created.
 
-Done. App registration values:
-  TENANT_ID     : 9d2116ce-afe6-4ce8-8bc3-c7c7b69856c2
-  CLIENT_ID     : 6ee4d8c0-9ab0-49b0-b7b1-d19de54e3fbd
-  REDIRECT_URIS : https://localhost:5001/signin-oidc, http://localhost:5000/signin-oidc, https://app-ciquocsj.azurewebsites.net/signin-oidc
+Operator follow-up:
+
+- Sign in to the deployed web app as each user and complete any per-user OAuth prompt.
+- Run one Teams/Outlook-backed Work IQ query per user to validate delegated access end to end.
+- Deactivate Global Administrator after setup.
+- Pause the Fabric capacity when it is not needed to avoid ongoing cost.
+- Ontology and dependent Data Agent deployment remain separate and require the applicable Fabric tenant preview settings.
